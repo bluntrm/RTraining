@@ -1,0 +1,394 @@
+#READ IN THE DATA AS CSV
+
+data1 <- read.csv (file.choose(), header=TRUE)
+
+#header=TRUE means the first row contains the column names
+#file.choose can be replaced with the file path
+
+PCB1 <- read.csv(file.choose(), header=TRUE)
+
+ls()
+
+#rm() to remove all datasets in memory
+
+
+#DATAFRAMES AND MATRICES
+#SUBSETTING
+#Use "$" to refer to a column
+#For example "PCB1$Age" will pull only the "Age" column from dataset PCB1
+
+PCB1$Age
+
+#If you don't have a column name, you can use:
+#'dataset name'[row,column]
+#Example: PCB1[ ,1] where the blank will produce all of the rows
+
+PCB1[ ,1] #All of the rows, first column
+PCB1[1, ] #All of the columns, first row
+
+#This is useful for subsetting the dataset
+#Another useful function is logic statements.
+
+# "==" Equal to
+# "!=" Not Equal
+# "&" and
+# "|" Or
+# "!" Not
+# "xor()" Either
+
+#For example, this will list from the PCB1 dataset, Where the Age column only
+#shows values larger than 3
+
+PCB1[PCB1$Age > 3, ]
+
+#Using more than one logic operator
+#All rows where Age is > 3 and PCB is < 9
+
+PCB1[PCB1$Age > 3 & PCB1$PCB <9, ]
+
+
+#MISSING VALUES
+#Logical test to find N/A's, R will place an NA for missing elements
+
+is.na('variable')
+
+
+
+#SUBSETTING CHARACTER DATASET
+Pain1<-read.csv(file.choose(),header=TRUE)
+
+#For alpha characters, use quotes and case sensitivity
+#Don't forget to leave a blank for all columns/rows
+
+Pain1[Pain1$HairColour == "LightBlond", ]
+
+
+
+#CREATING A SUBSET BY RANDOM SUBSET
+
+#Get the number of rows in Pain1 and assign it to a variable
+N1 <- nrow(Pain1) 
+
+#Generate that many uniform random numbers (Between 0 and 1) 
+U1 <-runif (N1,0,1)
+
+#Determine which are greater than .5 and assgin 1 for true and 0 for false
+ifelse(U1 > 0.5,1,0)
+
+#Pull the data points at random as created above
+Pain1[U1 > 0.5,]
+
+
+###########################################
+
+
+#MANUALLY ENTER DATA INTO R
+
+#This creats two datasets
+Data1 <- c(1,2,4,7)
+Data2 <- c(21,52,65,45,78,78)
+
+#Now combine the two, rbind combine rows, cbine combines columns
+
+Data3 <- rbind (Data1, Data2)
+
+#Produces error, we need the same number of columns, adding 2 more data points
+
+Data1<-c(8,9)
+
+#Now add the column names
+
+colnames(Data3)<-c("a","b","c","d","e","f")
+
+#EDIT THE DATA MANUALLY
+
+#This will bring up a spreadsheet editor
+Data4<- edit(Data3)
+
+
+
+#########################################
+
+#BASIC COMPUTATIONS
+
+#sum()
+#mean()
+#sd()  Standard Deviation
+#min()
+#max()
+
+#Example, standard deviation/median of a column
+
+sd(PCB1$PCB)
+median(PCB1$PCB)
+
+
+#VECTOR OF QUANTILES 
+
+#quantile( 'dataset', 'percentage')
+quantile(PCB1$PCB,.25)
+quantile(PCB1$PCB,.75)
+quantile(PCB1$PCB,c(.25,.5,.75))
+
+
+
+#APPLYING THE SAME FUNCTION TO MULTIPLE ROWS/COLUMNS/GROUPS
+
+#For Rows/Columns
+#apply('dataset',1,'function') 1 is for rows 
+#apply('dataset',2,'function') 2 is for columns
+
+apply(PCB1,1,sd) #Produces the SD for all rows
+apply(PCB1,2,sd) #Produces the SD for all columns
+
+#For Groups
+#tapply(dataset,index,function)
+#Where index is a specification 
+
+tapply(Pain1$Pain, Pain1$HairColour,mean)
+
+
+
+#CORRELATION
+#cor()
+cor(PCB1) 
+
+#To create r^2 [for row 1, column 2] 
+cor(PCB1)[1,2]^2 
+
+
+#LINEAR REGRESSION
+#y=a+bx
+#lm()
+#lm(y~x)
+
+lm(PCB1$PCB ~ PCB1$Age)
+
+
+#SUMMARIZING THE DATASET
+#table(Pain1) tables the data
+#summary() gives the 5 number summary
+summary(Pain1)
+
+
+#SAMPLING
+#sample(dataset, size of sample)  
+
+#Without replacement
+sample(Pain1$Pain, 10) 
+
+#With replacement
+sample(Pain1$Pain, 10, replace=TRUE) 
+
+
+#RANDOM NUMBER GENERATION
+#There are tons of distributions for random sampling (Normal, Poisson, etc)
+#EXAMPLE: rnorm(number, mean, standard deviation)
+
+
+#IF STATEMENTS
+#if(condition) {
+#	do this
+# }else{
+#	do this
+# }
+
+
+####################GRAPHICS###################
+#Approach: These are built one component at a time in layers
+
+
+#HISTOGRAM
+#hist() Creates the histogram
+
+hist(PCB1$PCB, 				#This specifies a column
+	main="PCB DATASET")		#This gives a title to the dataset
+
+
+CherryTree1<-read.csv (file.choose(), header=TRUE)
+
+hist(CherryTree1$Diam,				#Column
+	main="Cherry Tree Diameters",		#Title	
+	xlab="Diameter",				#X-Axis Title
+	col=rainbow (17))				#Color
+
+#Color can be text or number code
+#Above the rainbow code is used "col=rainbow('any number')"
+
+
+
+#BOXPLOTS
+#boxplot() creates boxplots
+#For comparing differnt groups
+
+boxplot(CherryTree1$Diam,			#Column
+	main="Cherry Tree Diameters",		#Title	
+	ylab="Diameter",				#Y-Axis Title
+	col=36)					#Color
+
+
+
+#BOXPLOT AND HISTORGRAM EXAMPLES
+Heart1<-read.csv(file.choose(), header=TRUE)
+
+
+hist(Heart1$Before,			#Column
+	main="Heart Rate Before",	#Title	
+	xlab="BPM",				#X-Axis Title
+	col=rainbow (11))			#Color
+
+boxplot(Heart1$Before,			#Column
+	main="Heart Rate Before",	#Title	
+	ylab="BPM",				#Y-Axis Title
+	border=12,				#Outline Color
+	col=15)	 			#Color
+
+#INTRODUCING TWO BOXPLOTS
+
+#Read in two columns
+boxplot(Heart1$Before,	Heart1$After)
+
+boxplot(Heart1$Before,	Heart1$After,
+	main="Heart Rate Before and After",
+	ylab = "BPM")
+
+
+hg1<-read.csv(file.choose(),header=TRUE)
+
+
+
+#MULTIPLE BOXPLOTS	
+
+boxplot(hg1$BeforeA, hg1$BeforeB, hg1$AfterA, hg1$AfterB,		#Columns
+	main = "Heart \n Rates",						#Title
+	ylab = "BPM",								#Y-axis Title	
+	names= c("Before A", "Before B", "After A", "After B")	#Individual Plot Titles
+)
+	
+#From above, "\n" creates a line break	
+
+
+
+#SCATTERPLOT WITH REGRESSION LINE
+#plot(x,y) and abline(lm()) creates scatterplot
+
+#Simple example
+plot(skier1$CPK, skier1$Weight)
+abline(lm(skier1$Weight~skier1$CPK))
+
+
+#Involved example
+plot(PCB1$Age, PCB1$PCB,	#Columns to Read in
+	main="PCB V. Age",	#Title
+	xlab="Age",			#X-Axis Label
+	ylab = "PCB",		#Y-Axis Label	
+	col=rainbow (20),		#Color of Points
+	pch=2				#Point Character (any number)
+	)
+
+#Add in a regression line, variable in y,x 
+
+abline(lm(PCB1$PCB~PCB1$Age),    	#This is flipped from above(y,x)
+	col="red",				#Line Color
+	lty=5,				#Line Type
+	lwd=3					#Line Width				
+	)
+	
+
+#I wasn't able to fix this, but this command should put text on the 
+#graph at specified coordinates 50,1000
+
+text(50,1000, paste("Here's another Z")
+
+
+
+#MULTIPLE ITEMS ON THE SCATTERPLOT
+#plot()    Scatterplot
+#point()   Additional Plots
+#legend()  Legend	
+
+babies1 <-read.csv(file.choose(), header=TRUE)
+
+
+#Subset the data by Age
+babies3<-babies1[babies1$Age==3, ] #Pulls all of the rows with age 3
+babies12<-babies1[babies1$Age==12, ] #Pulls all of the rows with age 12
+babies24<-babies1[babies1$Age==24, ] #Pulls all of the rows with age 24
+
+
+#Find the minimum and maximum values in order to scale correctly
+Minx1 <- min(babies1$x1)
+Maxx1 <- max(babies1$x1)
+Minx2 <- min(babies1$x2)
+Maxx2 <- max(babies1$x2)
+
+
+#Plot the subset of babies3
+plot(babies3$x1, babies3$x2,	#Columns to Read in
+	main="X1 v. X2",		#Title
+	xlab="X1",			#X-Axis Label
+	ylab = "X2",		#Y-Axis Label	
+	col="purple",		#Color of Points
+	pch=7,			#Point Character (any number)
+	xlim=c(Minx1,Maxx1),	#Scales for x
+	ylim=c(Minx2,Maxx2)	#Scales for y	
+	)
+
+#Add babies12 data points to the same plot
+points(babies12$x1, babies12$x2,#Columns to Read in	
+	col="blue",			#Color of Points
+	pch=2				#Point Character (any number)
+	)
+
+#Add babies24 data points to the same plot
+points(babies24$x1, babies24$x2,#Columns to Read in
+	col="red",			#Color of Points
+	pch=1				#Point Character (any number)
+	)
+
+
+#ADDING A LEGEND
+
+#Legend will display each line in order listed
+
+legend(.25, 400,					#Coordinates of top left
+	c("3m","12m","24m"),			#Titles 
+	col=c("purple", "blue", "red"),	#Colors to use
+	pch=c(7,2,1)				#Characters to use
+	)
+
+
+#MULTIPLE GRAPHS ON THE SAME WINDOW
+#par(row,column) parameters, for partitioning the page with several graphs
+
+par(mfrow=c(2,1))		#Partitions as 2 rows
+
+hist(Heart1$Before,			#Column
+	main="Heart Rate Before",	#Title	
+	xlab="BPM",				#X-Axis Title
+	col=rainbow (11))			#Color
+
+boxplot(Heart1$Before,			#Column
+	main="Heart Rate Before",	#Title	
+	xlab="BPM",				#X-Axis Title
+	border=12,				#Outline Color
+	col=15,	 			#Color
+	horizontal=TRUE			#Flips plot on it's side
+	)
+
+
+
+par(mfrow=c(1,2))		#Partitions as 2 columns
+
+hist(Heart1$Before,			#Column
+	main="Heart Rate Before",	#Title	
+	xlab="BPM",				#X-Axis Title
+	col=rainbow (11))			#Color
+
+boxplot(Heart1$Before,			#Column
+	main="Heart Rate Before",	#Title	
+	xlab="BPM",				#X-Axis Title
+	border=12,				#Outline Color
+	col=15,	 			#Color
+	horizontal=TRUE			#Flips plot on it's side
+	)

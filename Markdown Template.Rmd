@@ -1,0 +1,299 @@
+
+![COmmunicatng About CHoices in transplantation](C:\\Users\\bluntrm\\Desktop\\Coach\\coach logo.png)
+
+COACH Report for `r format(Sys.Date(), format="%B %d %Y")`
+========================================================
+
+**Agenda items:**
+
+* To bullet point, use an asterisk
+* For example, snow
+* This portion could be completed by team members directly editing the syntax file
+
+
+
+
+
+```{r echo=FALSE, results='hide',message=FALSE}
+
+if (!require("Hmisc")) {
+  install.packages("Hmisc")
+  library(Hmisc)
+}
+
+if (!require("bitops")) {
+  install.packages("bitops")
+  library(bitops)
+}
+
+if (!require("xtable")) {
+  install.packages("xtable")
+  library(xtable)
+}
+
+if (!require("RCurl")) {
+  install.packages("RCurl")
+  library(RCurl)
+}
+
+if (!require("ggplot2")) {
+  install.packages("ggplot2")
+  library(ggplot2)
+}
+
+if (!require("gridExtra")) {
+  install.packages("gridExtra")
+  library(gridExtra)
+}
+
+if (!require("knitr")) {
+  install.packages("knitr")
+  library(knitr)
+}
+
+if (!require("gmodels")) {
+  install.packages("gmodels")
+  library(gmodels)
+}
+
+
+
+#API Data
+
+
+```
+
+The report makes a live connection to REDCap each time the code is run and updates all tables, figures, and frequencies from the source:
+
+* ***COACH Pre-intervention interview guide***
+ * Contains `r nrow(coach2)` observations and `r ncol(coach2)` variables
+* ***COACH Tracking Database 2.0***
+ * Contains `r nrow(coach)` observations and `r ncol(coach)` variables
+
+<hr>
+
+
+
+#### Tables can be dressed up a little bit for appearance.  This  one compares the Case Status [case_status] variable against RA initals [ra]:
+
+```{r echo=FALSE,message=FALSE, fig.width=7, fig.height=5}
+
+ras <- table (coach$case_status, coach$ra)    
+
+rownames(ras) <- c("Actively Recruiting","Actively Recruiting-HRSA","Ineligible",  "In Progress-Completed Pre","In Progress-Completed 1-Month Post", "Completed" , "In Progress-Completed HRSA Pre" ,"In Progress-Completed HRSA 1-Month Post" , "Completed HRSA", "Opt Out PC" , "Verbal Refusal", "Withdrew" , "Remote Participant-Actively Recruiting")
+#, "Remote Participant-Completed Pre" 
+#, "Remote Participant-Completed 1-Month Post" , "Remote Participant-Completed")
+
+grid.table(ras,# rows=coach$ra, cols=coach$case_status,
+           equal.height=TRUE, 
+           core.just = "center", 
+           padding.h=unit(4, "mm"),
+           gpar.corefill = gpar(fill="skyblue",alpha=0.5, col=NA),
+           h.even.alpha = 0.5,
+           gpar.colfill = gpar(fill= "skyblue3"),
+           gpar.rowfill = gpar(fill= "skyblue3"),
+           separator = "black",
+           show.box = TRUE,
+           show.vlines= TRUE,
+           equal.width=TRUE)
+
+```
+#### Or they can be represented as a standard statistical output.  This table also compares case status and RA intials, but includes basic frequencies and percentages (Note: Be sure that the viewing window is expanded enough for the HTML to display properly):
+
+```{r echo=FALSE,message=FALSE}
+CrossTable(ras,prop.c=F,prop.chisq=F,format="SPSS",max.width=10)
+```
+
+<hr>
+
+<br>
+## <u>Pre-Interview</u>
+
+```{r echo=FALSE, results='hide',message=FALSE}
+
+
+
+form<-table(coach$pre_format, coach$ra)
+
+
+if (nrow(form)==2) {
+  rownames(form)<- c("phone","paper and pencil")
+  }
+
+if (nrow(form)==1) {
+  rownames(form)<- "phone"
+  } 
+  
+if (nrow(form)==3) {
+       rownames(form)<- c("phone","paper and pencil", "in person")
+    }
+    
+```
+
+
+Pre-Interview's per month. Pre-Interview's by RA:
+
+```{r echo=FALSE,message=FALSE , fig.width=12, fig.height=5}
+
+
+pre<- as.Date(c(coach$interview_completed_pre, coach$date_paper_survey_returned_pre))
+
+par(mfrow=c(1,2))
+#pre[pre > "2013-12-31"]
+#months(pre)
+
+hist(pre,"months", freq =TRUE, col= cm.colors(12), 
+     main= "Interviews Per Month", xlab= "2013 - 2014")
+
+abline(xpd=F,h=c(5, 10,15, 20,25,30,35, 40,45,50,55 , 60,65, 70,75,80,85, 90,95), col="grey40", lty="dotted" )
+
+
+
+barplot (as.matrix(form),                                         
+                col= c("skyblue","skyblue4"),                                        
+                beside=F,                                                                                                                                  
+                xlab= "RA Intials",
+               main = "Interviews Per RA",                                                                               
+                horiz=F,                                                   
+                las=1,   
+                xaxs="r"
+                )
+
+abline(xpd=F,h=c(5, 10,15, 20,25,30,35, 40,45,50,55 , 60,65, 70,75,80,85, 90,95), col="grey40", lty="dotted" )
+
+
+
+par(mfrow=c(1,1))
+```
+
+Corresponding frequencies:
+```{r echo=FALSE,message=FALSE , fig.width=12, fig.height=5}
+CrossTable(form,prop.c=F,prop.chisq=F,format="SPSS",max.width=10)
+
+```
+
+
+
+<br>
+## <u>1- Month Post Interview</u>
+
+```{r echo=FALSE,message=FALSE}
+
+form2<-table(coach$format_post1, coach$ra)
+
+if (nrow(form2)==2) {
+  rownames(form2)<- c("phone","paper and pencil")
+  } 
+
+if (nrow(form2)==1) {
+  rownames(form2)<- "phone"
+  }
+  
+if (nrow(form2)==3) {
+       rownames(form2)<- c("phone","paper and pencil", "in person")
+    }
+    
+```
+
+1- Month Post Interview's per month. 1- Month Post Interview's by RA:
+```{r echo=FALSE,message=FALSE , fig.width=12, fig.height=5}
+
+
+post1<- as.Date(c(coach$date_interview_completed_1_month_post, coach$date_paper_survey_returned_1_month_post))
+
+par(mfrow=c(1,2))
+
+hist(post1,"months", freq =TRUE, col= cm.colors(12), 
+     main= "Interviews Per Month", xlab= "2013 - 2014")
+
+abline(xpd=F,h=c(5, 10,15, 20,25,30,35, 40,45,50,55 , 60,65, 70,75,80,85, 90,95), col="grey40", lty="dotted" )
+
+
+
+barplot (as.matrix(form2),                                         
+                col= c("skyblue","skyblue4"),                                        
+                beside=F,                                                                                                                                  
+                xlab= "RA Intials",
+               main = "Interviews Per RA",                                                                               
+                horiz=F,                                                   
+                las=1,   
+                xaxs="r"
+                )
+
+abline(xpd=F,h=c(5, 10,15, 20,25,30,35, 40,45,50,55 , 60,65, 70,75,80,85, 90,95), col="grey40", lty="dotted" )
+
+
+
+par(mfrow=c(1,1))
+```
+
+Corresponding frequencies:
+```{r echo=FALSE,message=FALSE , fig.width=12, fig.height=5}
+CrossTable(form2,prop.c=F,prop.chisq=F,format="SPSS",max.width=10)
+
+```
+
+<br>
+
+## <u>3- Months Post Interview</u> 
+
+```{r echo=FALSE,message=FALSE}
+form3<-table(coach$format_post3, coach$ra)
+if (nrow(form3)==2) {
+  rownames(form3)<- c("phone","paper and pencil")
+  }
+
+if (nrow(form3)==1) {
+  rownames(form3)<- "phone"
+ }
+  
+if (nrow(form3)==3) {
+       rownames(form3)<- c("phone","paper and pencil", "in person")
+    }
+    
+
+```
+
+3- Month Post Interview's per month. 3- Month Post Interview's by RA:
+```{r echo=FALSE,message=FALSE , fig.width=12, fig.height=5}
+
+
+post3<- as.Date(c(coach$date_interview_completed_3_month_post, coach$date_paper_survey_returned_3_month_post))
+
+par(mfrow=c(1,2))
+
+hist(post3,"months", freq =TRUE, col= cm.colors(12), 
+     main= "Interviews Per Month", xlab= "2013 - 2014")
+
+abline(xpd=F,h=c(5, 10,15, 20,25,30,35, 40,45,50,55 , 60,65, 70,75,80,85, 90,95), col="grey40", lty="dotted" )
+
+
+
+barplot (as.matrix(form3),                                         
+                col= c("skyblue","skyblue4"),                                        
+                beside=F,                                                                                                                                  
+                xlab= "RA Intials",
+               main = "Interviews Per RA",                                                                               
+                horiz=F,                                                   
+                las=1,   
+                xaxs="r"
+                )
+
+abline(xpd=F,h=c(5, 10,15, 20,25,30,35, 40,45,50,55 , 60,65, 70,75,80,85, 90,95), col="grey40", lty="dotted" )
+
+
+
+par(mfrow=c(1,1))
+```
+
+Corresponding frequencies:
+```{r echo=FALSE,message=FALSE , fig.width=12, fig.height=5}
+CrossTable(form3,prop.c=F,prop.chisq=F,format="SPSS",max.width=10)
+
+```
+
+
+
+
+
+

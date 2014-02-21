@@ -1,0 +1,522 @@
+
+
+#CONFIDENCE INTERVAL
+#prop.test(x,n)  where x is the count for proportion and n is the total count
+#EX: 517 responders out of 1000
+
+prop.test(517,1000)
+
+#The p-value given is menaningless. 
+#The confidence level can be changed
+
+prop.test(517,1000, conf.level=.99)
+
+#Here is the meaningful part of the output
+#99 percent confidence interval:
+# 0.4758202 0.5579529 
+
+#This interpreted as:
+#"We are 99% confident that the actual proportion is between 47% and 55%."
+
+
+
+
+
+
+
+
+#HYPOTHESIS TEST ON A SINGLE PROPORTION
+#use prop.test()
+
+prop.test(300,1019)
+
+#Add in your specifics 
+prop.test(300,1019, p=.25, alternative="greater")
+
+#This is the meaningful part of the read out:
+
+#data:  300 out of 1019, null probability 0.25 
+#X-squared = 10.4812, df = 1, p-value = 0.000603
+#alternative hypothesis: true p is greater than 0.25 
+#"We have suffcient evidence to claim that more than 25% of proportion are Ha"
+
+
+
+
+
+
+
+
+
+#INFERENCES ON A SINGLE MEAN (MU)
+#t.test()
+
+Bh1<-read.csv(file.choose(),header=TRUE)
+
+t.test(Bh1$Interval)	#Reads in dataset $ column
+
+
+#This is the meaningful part:
+
+#95 percent confidence interval:
+# 31.39750 48.25875 
+#sample estimates:
+#mean of x 
+# 39.82812 
+#"We are 95% confident that the mean time between eruptions is between 31 and 48 seconds"
+
+#Can be run with different confidence intervals:
+t.test(Bh1$Interval, conf.level = .99)
+t.test(Bh1$Interval,conf.level = .9)
+
+
+#Example: Is the mean length of a fish smaller than 60mm?
+
+#Mu = mean length of the fish
+#Hypothesis: Ho: mu >= 60  vs.  Ha: mu < 60
+#Significance level: alpha = 0.0732 
+#Test Statistic: t.test() in R 
+#Decision Rule: If p value< alpha, reject Ho in favor of Ha
+
+fg1<-read.csv(file.choose(), header=TRUE)
+
+t.test(fg1$x)
+
+
+#This part of the read out gives the p-value of Ha, 
+#specified as being the mean is not zero
+
+#t = 60.9392, df = 71, p-value < 2.2e-16
+#alternative hypothesis: true mean is not equal to 0 
+
+
+#Specify for the alternate hypothesis
+t.test(fg1$x, mu=60, alternative="less")
+
+
+
+
+
+
+
+
+
+#INFERENCES ON TWO PROPORTIONS
+#prop.test
+
+#Ex. Are p1 and p2 the same?
+#p1=347,1027	Proportion out of a total
+#p2=366,1018	Proportion out of a total
+
+prop.test(c(347,366), c(1027,1018))
+
+
+#95 percent confidence interval:
+# -0.06392963  0.02062728 
+#sample estimates:
+#   prop 1    prop 2 
+#0.3378773 0.3595285 
+
+#"We are 95% confident that the difference in rates is between -6.3% and 2%"
+
+
+#EXAMPLE: Is there a difference in p1 (121/1000) and p2(146/1000)?
+#H0:p1-p2=0   
+#Ha:p1-p2!=0
+
+prop.test(c(121,146),c(1000,1000))
+
+#Confirm that the read out is correct:
+
+#data:  c(121, 146) out of c(1000, 1000) 
+#X-squared = 2.4897, df = 1, p-value = 0.1146
+#alternative hypothesis: two.sided 
+#95 percent confidence interval:
+# -0.055791646  0.005791646 
+#sample estimates:
+#prop 1 prop 2 
+# 0.121  0.146 
+
+#Fail to reject H0
+
+
+
+
+
+
+
+
+
+#INFERENCES ON TWO MEANS
+
+#mu1 - mu2
+#alpha=0.021
+#Test Statistic: t.test() in R
+#Decision Rule: If the p-value < alpha, then reject Ho
+
+sway1<-read.csv(file.choose(), header=TRUE)
+
+#It's a good idea to run a boxplot first to see the data (They look different):
+
+
+boxplot(FBSway~Age,			#This command ~ subsets the FBSway column by the categories in the age column
+	data=sway1,
+	ylab="FrontBack Sway")
+	
+
+t.test(FBSway~Age,mu=0,alternative="greater",data=sway1)
+
+#Alpha @ .021 > P @ .02 
+#Reject H0
+
+
+
+
+
+
+
+
+
+#CONTINGENCY TABLES
+#chisq.test()
+
+#Distribution of categorical variables, to test if the proportions are the 
+#same across all groups
+#Determines if groups are homogenous, not where the differnce exists
+#Each cell should generally have more than 5 obs.  If it's zero, not valid for test
+
+#EXAMPLE
+#Ex. Are conviction rates the same across education levels?
+#Ho: Conviction is homogenious
+#Ha: Conviction rate is heterogenius
+#Alpha = .0632
+#Test Statistic: chisq.test() in R
+#Decision Rule: If the P-value < alpha, then reject H0
+
+#CREATING A MATRIX
+#Ordering fills from the top of column one, bottom column1 to top of column2
+#nrow= specifies the number of rows to divide it into.
+
+data1<-matrix(c(132,107,72,27,28,7),nrow=3)
+
+#Looks like this:
+#    [,1] [,2]
+#[1,]  132   27
+#[2,]  107   28
+#[3,]   72    7
+ 
+chisq.test(data1)
+
+#Produces this output:
+#Pearson's Chi-squared test
+#data:  data1 
+#X-squared = 5.1009, df = 2, p-value = 0.07805
+
+#Notice that P > Alpha.  Fail to reject H0
+
+#We have insuffcient data to claim Ha, that education is linked to conviction 
+
+
+#EXAMPLE
+convict1<-read.csv(file.choose(), header=TRUE)
+
+#Ex. Are conviction rates the same across education levels?
+#Ho: Conviction is homogenious
+#Ha: Conviction rate is heterogenius
+#Alpha = .0332
+#Test Statistic: chisq.test() in R
+#Decision Rule: If the P-value < alpha, then reject H0
+
+table(convict1)
+
+#Produces this table which can now be read into the Chi Square function:
+
+#          Conviction
+#Education  Aquited Convicted
+#  C2yr          24        21
+#  C4yr          66        53
+#  Graduate      35        28
+#  HS            80       155
+#  Hsplus        69        95
+#  No HS         55        96
+
+
+chisq.test(table(convict1))
+
+
+#        Pearson's Chi-squared test
+
+#data:  table(convict1) 
+#X-squared = 23.9245, df = 5, p-value = 0.0002245
+
+#Reject Ho
+
+
+#EXAMPLE:
+currency1<-read.csv(file.choose(), header=TRUE)
+
+table(currency1)
+chisq.test(table(currency1))
+
+#Pearson's Chi-squared test
+
+#data:  table(currency1) 
+#X-squared = 2.0373, df = 4, p-value = 0.7289
+
+#Compare P to alpha (none chosen)to determine homgenity
+
+
+
+
+
+
+
+
+#ANOVA
+#aov()
+
+#Similar to a 2 sample T-Test, but used when more than 2 comparisons are needed
+#The error rate involved in doing multiple t-tests sky rockets with each test
+
+#(Look up "Random assignment to treatemnt group")
+
+#For ANOVA, hypothesis is always:
+#H0: m1=m2=mk
+#Ha: at least two mu are differnt
+#Alpha = .0891
+#Test Statistic: aov() in R
+#Decision Rule: If the P-value < alpha, then reject H0
+
+#m1 = brown
+#m2 = green
+#m3 = blue
+
+#Observational study, eye color can't be randomly assigned
+
+flicker1<-read.csv(file.choose(), header=TRUE)
+
+#Run a plot to see the data
+boxplot(Flicker~Colour, data=flicker1)
+
+#Assign your analysis to a variable "flick.aov1"
+
+flick.aov1 <-aov(Flicker~Colour,		#Compares 'Flicker' against 'Colour' 
+			data=flicker1)
+
+
+
+summary(flick.aov1)		#Produces this output
+
+#            Df Sum Sq Mean Sq F value Pr(>F)#"Probability F is greater than"
+#Colour       2  23.00  11.499   4.802 0.0232 *
+#Residuals   16  38.31   2.394                 
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+#P-value (.0232) < Alpha (.0891), Reject H0
+
+#This shows that there is a difference in the data. 
+#To find out where, a multiple comparison procedure is needed
+#TukeyHSD() is a possibility, conservative in claiming differences   
+#fisherLSD() is a possibility, liberal in claiming differences
+
+
+TukeyHSD(flick.aov1)
+
+#  Tukey multiple comparisons of means
+#    95% family-wise confidence level
+
+#Fit: aov(formula = Flicker ~ Colour, data = flicker1)
+
+#$Colour
+#                 diff        lwr       upr     p adj
+#Brown-Blue  -2.579167 -4.7354973 -0.422836 0.0183579
+#Green-Blue  -1.246667 -3.6643959  1.171063 0.3994319
+#Green-Brown  1.332500 -0.9437168  3.608717 0.3124225
+
+#This shows Brown-Blue have differences, but the other categories do not
+
+
+
+#EXAMPLE:
+light1<-read.csv(file.choose(), header=TRUE)
+
+table(light1)						#Table
+boxplot(Velocity~Trial, data=light1)		#Boxplot
+aov.light1 <-aov(Velocity~Trial, data=light1)	#AoV
+summary(aov.light1)					#Summary of AoV
+TukeyHSD(aov.light1)					#Location of differences in AoV
+
+
+plot(TukeyHSD(aov.light1))
+
+
+
+
+
+
+
+
+
+#REGRESSION
+#lm(x~y)
+#confint()
+
+#Relationships between x and y
+
+#Typical Regression is Linear
+#The following functions may not work with non-linear data
+
+#Causation and randomization go hand in hand. 
+#Claiming cause should immediately question randomizatiaon
+
+#MODEL
+#Regression line: Y=a+bx
+#Change in 'y' as a cause of 'x', you're estimating/looking for 'b', 'a' is constant
+
+race1<-read.csv(file.choose(), header=TRUE)
+
+plot(race1$Year, race1$Time,
+	type = "l",				#type letter "L" gives a line
+	main= "Race Times",
+	ylab= "Time",
+	xlab= "Year")
+
+#We can create a linear regression object:
+
+race1.lm <- lm(Time~Year, data=race1)	#Packs regression line into variable
+
+confint(race1.lm)					#Runs a confidence interval
+
+#Produces this, not all of it is useful:
+
+#                   2.5 %       97.5 %
+#(Intercept) 113778.84824 175637.13666
+#Year           -86.28577    -54.90249
+
+#INTERCEPT: This is extrapolating back to the year zero (NOT RELEVANT).  It's giving us 113778.84824 as
+#the minutes needed to race back in year 0
+#At the year zero we are 95% confident that it would take between  113778.84824 and 175637.13666 minutes
+#Don't interpret the intercept if you don't need to!
+
+#The coeffecient for the Year variable is useful.
+#We are 95% confident that the reduction in race times is between 86 and 54 minutes.
+
+#We can change the confidence levels
+confint(race1.lm, level=.99)	
+
+
+#EXAMPLE:
+#H0: b >= 0
+#Ha: b < 0
+#Alpha=0.075
+#Test Statistic: lm() in R
+
+
+summary(race1.lm)
+
+#Call:
+#lm(formula = Time ~ Year, data = race1)
+
+#Residuals:
+#     Min       1Q   Median       3Q      Max 
+#-2060.53  -480.96   -45.49   478.56  2099.59 
+
+#Coefficients:
+#             Estimate Std. Error t value Pr(>|t|)    
+#(Intercept) 144707.992  15406.154   9.393 1.04e-12 ***
+#Year           -70.594      7.816  -9.032 3.69e-12 ***
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+#Residual standard error: 870.4 on 51 degrees of freedom
+#Multiple R-squared: 0.6153,     Adjusted R-squared: 0.6078 
+#F-statistic: 81.57 on 1 and 51 DF,  p-value: 3.689e-12 
+
+
+#This P-value needs to be divided by 2 as it's a 1-sided test. R/SAS/SPSS doesn't do it for you!
+
+
+
+
+
+
+
+
+
+
+
+
+#POWER AND SAMPLE SIZE
+#power.t.test()		#This will give power and sample size
+
+#Power is the ability of the test to detect a difference
+#The probability of making a correct decision for H0/Ha
+				
+#Need to know
+#Sample size n
+#Difference in groups delta
+#Standard Deviation, assumes both have them same SD
+#Is the alternative one.sided or two.sided?
+#Type of test, one.sided, two.sided, or paired
+
+#If you can specify all of the categories, but power, the ouput will tell
+#you what power your test produces
+#If you specify the desired power, but not the n size, the output will give
+#you the corresponding sample size
+
+
+#TO FIND POWER
+
+power.t.test(n=15,
+		delta=3.2,
+		sd=4.1,
+		sig.level=.01,
+		type="two.sample",
+		alternative="one.sided")
+
+
+#Produces this output:
+
+#     Two-sample t test power calculation 
+
+#             n = 15
+#          delta = 3.2
+#             sd = 4.1
+#      sig.level = 0.01
+#          power = 0.385226
+#    alternative = one.sided
+
+# NOTE: n is number in *each* group 
+
+
+#Power =.38 means that we'll find a difference about 1/3 of the time.  This is low
+#If your power is low, lets figure out the sample size
+
+#TO FIND SAMPLE SIZE
+
+power.t.test(power=.9,
+		delta=3.2,
+		sd=4.1,
+		sig.level=.01,
+		type="two.sample",
+		alternative="one.sided")
+
+
+#Produces this output:
+
+#     Two-sample t test power calculation 
+#
+#              n = 44.11885
+#          delta = 3.2
+#             sd = 4.1
+#      sig.level = 0.01
+#          power = 0.9
+#    alternative = one.sided
+
+# NOTE: n is number in *each* group 
+
+
+
+
+
